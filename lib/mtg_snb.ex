@@ -1,4 +1,4 @@
-defmodule MtgSnB do
+defmodule MtgSnb do
   @ligamagic_show_card_url "http://www.ligamagic.com.br/?view=cards/card&card="
   require Logger
 
