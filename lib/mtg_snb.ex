@@ -2,6 +2,12 @@ defmodule MtgSnb do
   @ligamagic_show_card_url "http://www.ligamagic.com.br/?view=cards/card&card="
   require Logger
 
+  def get_cards(card_name_list) do
+    card_name_list
+    |> Enum.map(fn(card) -> get_card(card) end)
+    |> Enum.reduce([], fn ({:ok, card}, acc) -> [card | acc] end)
+  end
+
   def get_card(card_name) do
     card_url = ligamagic_url(card_name)
     Logger.info "Fetching from #{card_url}"
@@ -41,6 +47,7 @@ defmodule MtgSnb do
       |> Enum.map(&(fetch_store_c(&1)))
       |> Enum.map(fn (_) -> receive_store end)
       |> Enum.reduce([], fn store, acc -> [store | acc] end)
+      |> Enum.sort_by(fn(store) -> store.price end)
   end
 
   def fetch_store_c(store) do
@@ -76,10 +83,18 @@ defmodule MtgSnb do
       |> Enum.at(0)
       |> Store.normalize_url
 
+    qty =
+      store
+      |> Floki.find("td")
+      |> Enum.at(3)
+      |> Floki.text
+      |> Store.clean_qty
+
     %Store{
       name: name,
       price: price,
-      url: url
+      url: url,
+      qty: qty
     }
   end
 
