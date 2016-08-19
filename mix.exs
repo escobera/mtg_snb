@@ -31,7 +31,8 @@ defmodule MtgSnb.Mixfile do
   defp deps do
     [
       {:httpotion, "~> 3.0.0"},
-      {:floki, "~> 0.10.0"}
+      {:floki, "~> 0.10.0"},
+      {:benchee, "~> 0.3", only: :dev}
     ]
   end
 end
