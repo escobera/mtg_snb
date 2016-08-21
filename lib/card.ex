@@ -7,6 +7,12 @@ defmodule Card do
 
   def lowest_price(card) do
     lowest_price_store(card).price
-      |> String.to_float
   end
+
+  def lowest_price_by_store(card, store_name) do
+    card.stores
+    |> Enum.filter(fn(store) -> store.name == store_name end)
+    |> Enum.min_by(fn(item) -> item.price end)
+  end
+
 end

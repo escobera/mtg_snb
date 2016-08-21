@@ -14,7 +14,7 @@ defmodule MtgSnbTest do
   end
 
   test "Fetches stores that have that card for sale (parallel)" do
-    stores = MtgSnb.fetch_stores_c(@html)
+    stores = MtgSnb.fetch_stores(@html)
     assert is_list(stores)
   end
 end

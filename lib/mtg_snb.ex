@@ -6,6 +6,7 @@ defmodule MtgSnb do
     card_name_list
     |> Enum.map(fn(card) -> get_card(card) end)
     |> Enum.reduce([], fn ({:ok, card}, acc) -> [card | acc] end)
+    |> BestOrder.find_best_order
   end
 
   def get_card(card_name) do
@@ -15,7 +16,7 @@ defmodule MtgSnb do
       %HTTPotion.Response{ body: "Site em manutencao, por favor aguarde alguns minutos.", headers: _, status_code: 200 } ->
         {:err, "Ligamagic em manutenção"}
       %HTTPotion.Response{ body: body, headers: _headers, status_code: 200 } ->
-        {:ok, fetch_card_info_c(body) } #, fetch_prices(body)
+        {:ok, fetch_card_info(body) } #, fetch_prices(body)
       _ ->
         {:err, "not found"}
     end
@@ -27,40 +28,33 @@ defmodule MtgSnb do
     %Card{ name: name, stores: stores }
   end
 
-  def fetch_card_info_c(body) do
-    name = fetch_name(body)
-    stores = fetch_stores_c(body)
-    %Card{ name: name, stores: stores }
-  end
-
   def fetch_name(body) do
-    Floki.find(body, ".subtitulo-card") |> Floki.text
+    pt_br_name = Floki.find(body, "h3.titulo-card") |> Floki.text
+
+    case Floki.find(body, ".subtitulo-card") |> Floki.text do
+      "" ->
+        original_name = pt_br_name
+      original_name ->
+        original_name
+    end
+
   end
 
   def fetch_stores(body) do
     Floki.find(body, "#cotacao-1 tbody tr")
-      |> Enum.map(fn(store) -> fetch_store(store) end)
-  end
-
-  def fetch_stores_c(body) do
-    Floki.find(body, "#cotacao-1 tbody tr")
-      |> Enum.map(&(fetch_store_c(&1)))
-      |> Enum.map(fn (_) -> receive_store end)
+      |> Enum.map(fn(store) ->
+        caller = self
+        spawn(fn ->
+          send(caller, {:store, fetch_store(store)})
+        end)
+      end)
+      |> Enum.map(fn (_) ->
+        receive do
+          {:store , store} -> store
+        end
+      end)
       |> Enum.reduce([], fn store, acc -> [store | acc] end)
       |> Enum.sort_by(fn(store) -> store.price end)
-  end
-
-  def fetch_store_c(store) do
-    caller = self
-    spawn(fn ->
-      send(caller, {:store, fetch_store(store)})
-    end)
-  end
-
-  def receive_store do
-    receive do
-      {:store , store} -> store
-    end
   end
 
   def fetch_store(store) do
