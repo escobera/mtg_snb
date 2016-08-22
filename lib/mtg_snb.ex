@@ -102,6 +102,6 @@ defmodule MtgSnb do
   # end
 
   def ligamagic_url(card_name) do
-    @ligamagic_show_card_url <> card_name
+    @ligamagic_show_card_url <> URI.encode(card_name)
   end
 end
