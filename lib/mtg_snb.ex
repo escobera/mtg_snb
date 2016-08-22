@@ -67,6 +67,7 @@ defmodule MtgSnb do
     price =
       store
       |> Floki.find("td p.lj")
+      |> Floki.filter_out("font")
       |> Floki.text
       |> Store.clean_price
 
