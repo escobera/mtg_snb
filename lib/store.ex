@@ -20,4 +20,10 @@ defmodule Store do
   def normalize_url(url) do
     @ligamagic_base <> url
   end
+
+  def filter_by_qty(store_list, min_qty) do
+    store_list
+      |> Enum.filter(fn(store) -> store.qty >= min_qty end)
+  end
+
 end
