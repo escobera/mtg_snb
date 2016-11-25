@@ -30,9 +30,9 @@ defmodule MtgSnb.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:httpotion, "~> 3.0.0"},
-      {:floki, "~> 0.10.0"},
-      {:benchee, "~> 0.3", only: :dev}
+      {:httpotion, "~> 3.0.2"},
+      {:floki, "~> 0.11.0"},
+      {:benchee, "~> 0.5", only: :dev}
     ]
   end
 end

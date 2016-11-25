@@ -1,5 +1,6 @@
-defmodule Workflow.ParseBody do
+defmodule MtgSnb.Workflow.ParseBody do
   def parse(body) do
+    IO.puts body
     Floki.find(body, "#cotacao-1 tbody tr")
       |> Enum.map(fn(store) ->
         caller = self
