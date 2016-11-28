@@ -1,1 +1,9 @@
 1 - Pegar lojas que possuem os cards (agrupar cards por loja), na quantidade que eu desejo
+
+
+string
+  |> Workflow.get_card_list_from_string # list de cards + qty => [["Conterspell", 3], []
+  |> Workflow.fetch_pages # get the pages for each spell, preserve quantity [[page_content, card_qty]]
+  |> Workflow.parse_pages # pegar as lojas que vendem o card, somente os que atendem a quantidade estabelecida
+  # Retornar aqui
+  |> Workflow.filter_stores
